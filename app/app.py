@@ -72,7 +72,7 @@ def delete_contact(contact_id):
     for contact in contacts:
         if contact['contact_id'] == contact_id:
             contacts.remove(contact)
-            return jsonify({"message": 'Contact updated successfully'})
+            return jsonify({"message": 'Contact deleted successfully'})
 
     return jsonify({'message': 'Contact not found'})
 
