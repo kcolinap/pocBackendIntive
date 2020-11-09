@@ -1,5 +1,6 @@
 from flask import jsonify, Flask, request
 from contacs import contacts
+from utils.Utils import check_data
 
 app = Flask(__name__)
 
@@ -38,13 +39,18 @@ def add_contact():
         'phone': request_data['phone']
     }
 
-    # Check is the contact id already exist on app
-    for contact in contacts:
-        if contact['contact_id'] == new_contact['contact_id']:
-            return jsonify({'message': 'Contact ID: ' + str(new_contact['contact_id']) + ' already exist on the app'})
+    # Check contact data len
+    if check_data(new_contact):
+        # Check is the contact id already exist on app
+        for contact in contacts:
+            if contact['contact_id'] == new_contact['contact_id']:
+                return jsonify(
+                    {'message': 'Contact ID: ' + str(new_contact['contact_id']) + ' already exist on the app'})
 
-    contacts.append(new_contact)
-    return jsonify({'message': 'Contact added successfully'})
+        contacts.append(new_contact)
+        return jsonify({'message': 'Contact added successfully'})
+    else:
+        return jsonify({'message': 'One or more data field has not the correct length'})
 
 
 # PUT /contacts/<int:id>
@@ -53,16 +59,25 @@ def edit_contact(contact_id):
     for contact in contacts:
         if contact['contact_id'] == contact_id:
             request_data = request.get_json()
+            aux_contact = {
+                'name': request_data['name'],
+                'last_name': request_data['last_name'],
+                'address': request_data['address'],
+                'email': request_data['email'],
+                'phone': request_data['phone']
+            }
 
-            # setting the new data for the contact
-            contact['name'] = request_data['name']
-            contact['last_name'] = request_data['last_name']
-            contact['address'] = request_data['address']
-            contact['email'] = request_data['email']
-            contact['phone'] = request_data['phone']
+            if check_data(aux_contact):
+                # setting the new data for the contact
+                contact['name'] = aux_contact['name']
+                contact['last_name'] = aux_contact['last_name']
+                contact['address'] = aux_contact['address']
+                contact['email'] = aux_contact['email']
+                contact['phone'] = aux_contact['phone']
 
-            return jsonify({"message": 'Contact updated successfully'})
-
+                return jsonify({"message": 'Contact updated successfully'})
+            else:
+                return jsonify({'message': 'One or more data field has not the correct length'})
     return jsonify({'message': 'Contact not found'})
 
 
