@@ -47,5 +47,35 @@ def add_contact():
     return jsonify({'message': 'Contact added successfully'})
 
 
+# PUT /contacts/<int:id>
+@app.route('/contacts/<int:contact_id>', methods=['PUT'])
+def edit_contact(contact_id):
+    for contact in contacts:
+        if contact['contact_id'] == contact_id:
+            request_data = request.get_json()
+
+            # setting the new data for the contact
+            contact['name'] = request_data['name']
+            contact['last_name'] = request_data['last_name']
+            contact['address'] = request_data['address']
+            contact['email'] = request_data['email']
+            contact['phone'] = request_data['phone']
+
+            return jsonify({"message": 'Contact updated successfully'})
+
+    return jsonify({'message': 'Contact not found'})
+
+
+# DELETE /contacts/<int:id>
+@app.route('/contacts/<int:contact_id>', methods=['DELETE'])
+def delete_contact(contact_id):
+    for contact in contacts:
+        if contact['contact_id'] == contact_id:
+            contacts.remove(contact)
+            return jsonify({"message": 'Contact updated successfully'})
+
+    return jsonify({'message': 'Contact not found'})
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
